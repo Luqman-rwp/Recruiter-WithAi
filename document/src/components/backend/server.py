@@ -93,6 +93,16 @@ def create_pdf(text):
         if not line:
             continue
 
+        # ===== Centered LOR Header =====
+        if re.match(r"^To Whom It May Concern", line, re.IGNORECASE):
+            flowables.append(Spacer(1, 12))
+            flowables.append(Paragraph(
+                "<u><b><font size=16>TO WHOM IT MAY CONCERN</font></b></u>",
+                ParagraphStyle(name="LORHeader", alignment=TA_CENTER)
+            ))
+            flowables.append(Spacer(1, 12))
+            continue
+
         # ===== Header =====
         if line.startswith("Name:"):
             name = line.replace("Name:", "").strip()
@@ -155,6 +165,7 @@ def create_pdf(text):
     buffer.seek(0)
     return buffer
 
+
 # ---------------- Prompt Builder ----------------
 def build_prompt(doc_type, data):
     if doc_type == "cv":
@@ -176,7 +187,6 @@ def build_prompt(doc_type, data):
 Create a CV for {data.get("full_name")} following this format:
 
 Name: {data.get("full_name")}
-Role: {data.get("goal")}
 Contact: {data.get("email")} | GPA: {data.get("gpa")} | Phone: {data.get("phone")}
 
 Rules:
@@ -194,7 +204,7 @@ Rules:
   • Responsibilities/Descriptions as bullet points
 - Use clean, professional formatting
 - Use only black font color
-- Minimum 2 pages.
+- Maximum 2 pages.
 
 Sections:
 - SUMMARY: Based on {data.get("goal")}
@@ -235,23 +245,61 @@ Goal: {data.get("goal")}
 
     if doc_type == "lor":
         return f"""
-Write a professional Letter of Recommendation (≥500 words).
-Rules:
-- Use simple, clear English.
-- Use bold headings like **Introduction**, **Student Qualities**, **Conclusion**.
+Write a concise, professional, and formal *Letter of Recommendation (LOR)* for university admission — 
+strictly between **350 and 450 words** (fit on a single A4 page).
 
+Follow these **exact instructions**:
+
+**Tone & Structure:**
+- Academic, sincere, natural human tone (avoid robotic or exaggerated language).
+- Begin with: “TO WHOM IT MAY CONCERN,” (uppercase).
+- First line: “It gives me great pleasure to write this letter of recommendation for {data.get("full_name")}...”
+- The recommender **has taught** the student in {data.get("Course_Taught")} during {data.get("Duration_cousre")}. 
+  Never say or imply that the recommender did not teach the student.
+- Maintain smooth paragraph flow and avoid bullet points or lists.
+- Avoid talking too much about internships or external experiences; keep focus on academics, personality, and potential.
+
+**Content Guidelines:**
+
+1. **Introduction (2–3 lines):**  
+   Express pleasure and honor in recommending the student for {data.get("program")} admission.
+
+2. **Academic Observation:**  
+   Mention that the recommender taught {data.get("full_name")} in {data.get("Course_Taught")} during {data.get("Duration_cousre")}.  
+   Discuss the student’s class performance, learning attitude, conceptual clarity, and GPA ({data.get("gpa")}).
+
+3. **Skills & Strengths:**  
+   Highlight strong areas like {data.get("skills")}, analytical thinking, problem-solving, and teamwork.  
+   Mention that the student is hardworking, disciplined, and eager to learn.
+
+4. **Character & Personality:**  
+   Describe professional attitude, communication skills, leadership, punctuality, and collaboration.  
+   Mention the student’s positive influence on classmates and contributions in class.
+
+5. **Conclusion (2–3 lines):**  
+   Strongly recommend the student for admission and express confidence in future success.  
+   Invite further contact for verification.
+
+**Recommender Details:**
+Name: {data.get("recommender_name")}
+Title: {data.get("recommender_title")}
 Institution: {data.get("recommender_institution")}
-Recommender: {data.get("recommender_name")}, {data.get("recommender_title")}
 Email: {data.get("recommender_email")}
 
-Student Info:
-Name: {data.get("full_name")}
-GPA: {data.get("gpa")}
-Skills: {data.get("skills")}
+**Formatting Rules:**
+- Start with “TO WHOM IT MAY CONCERN,” followed by a blank line.
+- Use natural paragraphs with one blank line between them.
+- End with:
+
+Sincerely,  
+{data.get("recommender_name")}  
+{data.get("recommender_title")}  
+{data.get("recommender_institution")}  
+{data.get("recommender_email")}  
+
+Your output must stay under one page when converted to PDF (approx. 350–450 words).
+Avoid repeating experiences already mentioned in CV. Focus on academics and character.
 """
-
-    return "Invalid document type."
-
 # ---------------- Main ----------------
 def main():
     try:

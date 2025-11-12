@@ -25,7 +25,8 @@ export default function Home() {
   const [recommenderTitle, setRecommenderTitle] = useState("");
   const [recommenderInstitution, setRecommenderInstitution] = useState("");
   const [recommenderEmail, setRecommenderEmail] = useState("");
-
+  const [Duration, setDuration] = useState("");
+  const [CourseTaught, setCourseTaught] = useState("");
   // CV extras
   const [cvExperiences, setCvExperiences] = useState([
     { company: "", role: "", start_end: "", bullets: [""] },
@@ -76,6 +77,8 @@ export default function Home() {
       recommender_title: recommenderTitle,
       recommender_institution: recommenderInstitution,
       recommender_email: recommenderEmail,
+      Duration_cousre: Duration,
+      Course_Taught:CourseTaught,
       experiences: cvExperiences,
       projects: cvProjects,
       educations: cvEducations,
@@ -390,6 +393,16 @@ export default function Home() {
                 placeholder="Recommender email"
                 value={recommenderEmail}
                 onChange={(e) => setRecommenderEmail(e.target.value)}
+              />
+              <input
+                placeholder="Course Taught"
+                value={CourseTaught}
+                onChange={(e) => setCourseTaught(e.target.value)}
+              />
+              <input
+                placeholder="Duration"
+                value={Duration}
+                onChange={(e) => setDuration(e.target.value)}
               />
             </div>
           </>
